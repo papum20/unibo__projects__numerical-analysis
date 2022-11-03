@@ -1,6 +1,8 @@
 import numpy as np
 
 
+
+
 # x = [[x0..xm]]
 # deg = max degree (=n)
 def vandermonde(x, deg):
