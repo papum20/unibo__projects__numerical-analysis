@@ -32,7 +32,7 @@ def jacobi(A,b,x0,maxit,tol, xTrue):
       #x[i]=(b[i]-sum([A[i,j]*x_old[j] for j in range(0,i)])-sum([A[i, j]*x_old[j] for j in range(i+1,n)]))/A[i,i]
       x[i] = ( b[i] - np.dot(A[i,0:i],x_old[0:i]) - np.dot(A[i,i+1:n],x_old[i+1:n]) ) / A[i,i]  #formula Jacobi xk
     ite=ite+1
-    norma_it = np.linalg.norm(x_old-x)/np.linalg.norm(x_old)    #|xk-x(k-1)|/|xk|
+    norma_it = np.linalg.norm(np.subtract(x_old,x))/np.linalg.norm(x_old)    #|xk-x(k-1)|/|xk|
     relErr[ite-1] = np.linalg.norm(xTrue-x)/np.linalg.norm(xTrue)
     errIter[ite-1] = norma_it
   relErr=relErr[:ite]
@@ -55,7 +55,7 @@ def gaussSeidel(A,b,x0,maxit,tol, xTrue):
         #x[i]=(b[i]-sum([A[i,j]*x_old[j] for j in range(0,i)])-sum([A[i, j]*x_old[j] for j in range(i+1,n)]))/A[i,i]
         x[i] = ( b[i] - np.dot(A[i,0:i],x[0:i]) - np.dot(A[i,i+1:n],x_old[i+1:n]) ) / A[i,i]  #formula Jacobi xk
       it=it+1
-      norma_it = np.linalg.norm(x_old-x)/np.linalg.norm(x_old)    #|xk-x(k-1)|/|xk|
+      norma_it = np.linalg.norm(np.subtract(x_old,x))/np.linalg.norm(x_old)    #|xk-x(k-1)|/|xk|
       relErr[it-1] = np.linalg.norm(xTrue-x)/np.linalg.norm(xTrue)
       errIter[it-1] = norma_it
     relErr=relErr[:it]
@@ -69,7 +69,7 @@ def gaussSeidel(A,b,x0,maxit,tol, xTrue):
 # function f(x) defined in [a,b]
 # xTrue : true result
 # returns (xk(calculated solution), iterations, errors(per iteration))
-def bisection(a, b, f, xTrue=(), tolx=1.e-7, toly=1.e-16) -> tuple[float, int, np.ndarray]:
+def bisection(a, b, f, xTrue, tolx=1.e-7, toly=1.e-16) -> tuple[float, int, np.ndarray]:
 	if(f(a) * f(b) > 0):
 		print("f(a)*f(b) > 0")
 		return (-1, -1, np.zeros(0))
@@ -103,16 +103,16 @@ def stopCriteria_relative_eval(xk, xk_prev, fxk, fcomp, toly=1.e-6, tolx=1.-10):
 # df = D[f] = f'
 # xTrue : true solution
 # returns (xk(calculated solution), iterations, err(xk,xk-1), err(xk,xTrue))
+## instance of successiveApproxiamtions, where g(xk)=xk-f(xk)/df(xk)
 def newton(f, df, xTrue, maxit, x0=0, stopCriteria=stopCriteria_absolute, tolx=1.-10, toly=1.e-6):
 	errk = np.zeros(maxit, dtype=float)
-	errk[0] = tolx + 1
 	errAbs = np.zeros((maxit,1), dtype=float)
 	err_f = toly + 1
 
 	fcomp = f(x0)
 	xk = x0
 	it = 0
-	while(errk[it] > tolx and err_f > toly and it < maxit):
+	while((it == 0 or errk[it-1] > tolx) and err_f > toly and it < maxit):
 		xk_prev = xk
 		xk = xk - f(xk) / df(xk)
 		err_f, errk[it] = stopCriteria(xk, xk_prev, f(xk), fcomp=fcomp)
@@ -121,20 +121,20 @@ def newton(f, df, xTrue, maxit, x0=0, stopCriteria=stopCriteria_absolute, tolx=1
 
 	return (xk, it, errk[:it], errAbs[:it])
 
+# g : iteration function
+def successiveApproximations(f, g, xTrue, maxit, x0:float=0, stopCriteria=stopCriteria_absolute, tolx=1.e-10, toly=1.e-6) -> tuple[float, int, np.ndarray, np.ndarray]:
+	errk = np.zeros(maxit, dtype=float)
+	errAbs = np.zeros((maxit,1), dtype=float)
+	err_f = toly + 1
 
-def successiveApproximations(f, g, maxit, xTrue, x0=0, tolx=1.e-10, toly=1.e-6):
-  errk = np.zeros(maxit+1, dtype=np.float64)
-  errAbs = np.zeros(maxit+1, dtype=np.float64)
-  
-  
-  i= ...
-  err[0]=...
-  vecErrore[0] = ...
-  x = ...
+	fcomp = f(x0)
+	xk = x0
+	it = 0
+	while((it == 0 or errk[it-1] > tolx) and err_f > toly and it < maxit):
+		xk_prev = xk
+		xk = g(xk)
+		err_f, errk[it] = stopCriteria(xk, xk_prev, f(xk), fcomp=fcomp)
+		errAbs[it] = np.abs(xk - xTrue)
+		it += 1
 
-  while (... ): 
-    ...
-    
-  err = ...  
-  vecErrore = ...
-  return (x, i, err, vecErrore) 
+	return (xk, it, errk[:it], errAbs[:it])

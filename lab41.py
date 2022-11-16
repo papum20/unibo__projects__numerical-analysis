@@ -42,20 +42,23 @@ for (label, it) in iteration.rearrange_lists([labels_x[1:], [it_bisect, it_newto
 """ plot function """
 x_plot = np.linspace(a, b, x_steps + 1)
 y_plot = np.array(list(map(f, x_plot)))
+sol_x_plot = np.linspace(xTrue,xTrue,1)
+sol_y_plot = np.array([0])
 
 it_bisect_plot = np.linspace(1, it_bisect, it_bisect)
-it_newtonk_plot = np.linspace(2, it_newton, it_newton-1)
-it_newton_plot = np.linspace(1, it_newton, it_newton)
+it_newtonk_plot = np.linspace(1, it_newton, it_newton)
+it_newton_plot = it_newtonk_plot
 #draw
 plt.figure(figsize=plot_size)
 
 plt.subplot(2, 1, 1)
 plt.plot(x_plot, y_plot)
+plt.plot(sol_x_plot, sol_y_plot, marker='o')
 plt.title("f(x)", fontsize=plot_font_title)
 
 plt.subplot(2, 1, 2)
 plt.plot(it_bisect_plot, err_bisect, label="bisection")
-plt.plot(it_newtonk_plot, errk_newton[1:], label="newton, errk")
+plt.plot(it_newtonk_plot, errk_newton, label="newton, errk")
 plt.plot(it_newton_plot, errAbs_newton, label="newton, errAbs")
 plt.title("errors", fontsize=plot_font_title)
 plt.legend(fontsize=plot_legend_size)
