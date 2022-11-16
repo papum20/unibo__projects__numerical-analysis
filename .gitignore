@@ -1,0 +1,6 @@
+#VS CODE SETTINGS
+.vscode/
+
+#PY CACHE
+/__pycache__
+numan/__pycache__
