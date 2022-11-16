@@ -13,3 +13,10 @@ def vandermonde(x, deg):
 def tridiagonal(n, d_val, d_val_u, d_val_d):    #d=val(_u/_d): valore su diagonale (up/down)
     #A = np.diag(np.ones(n) * D_val, k=0) + np.diag(np.ones(n-1) * D-val_u, k=1) + np.diag(np.ones(n-1) * D_val_d, k=-1)    
     return np.eye(n,k=0)*d_val + np.eye(n,k=1)*d_val_u + np.eye(n,k=-1)*d_val_d
+
+
+# adds 0s up to size of vector (1-D matrix)
+# v must be of shape (n)
+def completeVector(v:np.ndarray, size):
+    if(size <= v.size): return v
+    else: return np.array(list(v) + [0 for i in range(size - v.size)], dtype=float)
