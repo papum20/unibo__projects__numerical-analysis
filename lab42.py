@@ -69,14 +69,14 @@ plt.title("f(x)", fontsize=plot_font_title)
 plt.subplot(3, 1, 2)
 for (it, err, n) in iteration.rearrange_lists([it_k_plot, errk, list(range(function_n))]):
 	plt.plot(it, err, label="g{}, errk".format(n))
-plt.title("errors abs", fontsize=plot_font_title)
+plt.title("errors k", fontsize=plot_font_title)
 plt.legend(fontsize=plot_legend_size)
 
 #errAbs
 plt.subplot(3, 1, 3)
 for (it, err, n) in iteration.rearrange_lists([it_k_plot, errAbs, list(range(function_n))]):
 	plt.plot(it, err, label="g{}, errAbs".format(n))
-plt.title("errors k", fontsize=plot_font_title)
+plt.title("errors abs", fontsize=plot_font_title)
 plt.legend(fontsize=plot_legend_size)
 
 plt.show()
