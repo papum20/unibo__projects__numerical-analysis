@@ -1,7 +1,0 @@
-{
-	"python.analysis.typeCheckingMode": "basic",
-	"python.analysis.include": ["C:\\Conda\\envs\\spyderenv\\Lib\\site-packages"],
-	"editor.insertSpaces": true,
-    "editor.tabSize": 4,
-    "editor.detectIndentation": true
-}
