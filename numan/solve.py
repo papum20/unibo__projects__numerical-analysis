@@ -1,7 +1,14 @@
 import math
+from typing import Callable, Iterable
 import numpy as np
 import scipy
 
+
+
+""" CONSTANTS """
+IT_MAX = 1000
+TOL_X = 1.e-7
+TOL_Y = 1.e-16
 
 
 """ DIRECT METHODS """
@@ -138,3 +145,54 @@ def successiveApproximations(f, g, xTrue, maxit, x0:float=0, stopCriteria=stopCr
 		it += 1
 
 	return (xk, it, errk[:it], errAbs[:it])
+
+def gradient (
+	x0:np.ndarray,
+	f:Callable[[np.ndarray], float],
+	df:Callable[[np.ndarray|ellipsis], float],
+	xTrue:np.ndarray,
+	mode, step, maxit, ABSOLUTE_STOP
+):
+	x = np.zeros((x0.size, maxit), dtype=float)
+	norm_d = np.zeros((1, maxit))					# norm (gradient(x))
+	function_eval_list=np.zeros((1,MAXITERATION))
+	error_list=np.zeros((1,MAXITERATION)) 
+
+	it = 0
+	x_last = np.array(x0, dtype=float)
+	"""
+	x[:,K] = ...
+	function_eval_list[:,k]=...
+	error_list[:,k]=...
+	norm_grad_list[:,k]=...
+"""
+	while (np.linalg.norm(df(x_last))>ABSOLUTE_STOP and it < maxit):
+		
+		...
+		
+		# backtracking step
+		step = ...
+
+		if(step==-1):
+			
+			...
+
+		x_last=...
+		
+		x[:,k] =
+		function_eval_list[:,k]=
+		error_list[:,k]=
+		norm_grad_list[:,k]=
+
+	function_eval_list = 
+	error_list = 
+	norm_grad_list = 
+
+	print('iterations=',k)
+	print('last guess: x=(%f,%f)'%(x[0,k],x[1,k]))
+
+	if mode=='plot_history':
+		return (x_last,norm_grad_list, function_eval_list, error_list, k, x)
+
+	else:
+		return (x_last,norm_grad_list, function_eval_list, error_list, k)
