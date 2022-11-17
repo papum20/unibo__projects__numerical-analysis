@@ -9,42 +9,29 @@ import time
 
 
 
-def next_step(x,grad): # backtracking procedure for the choice of the steplength
-  alpha=1.1
-  rho = 0.5
-  c1 = 0.25
-  p=-grad
-  j=0
-  jmax=10
-  while 
-  ... 
-  if  
-  ....
-    
 
 
 
-
-
-
-
-
-'''creazione del problema'''
-
+''' data '''
 
 f	= lambda x1, x2: 10*(x1-1)**2 + (x2-2)**2
 df	= lambda x1, x2: np.array([-20*(x1-1), -4*(x2-2)])
-xTrue=np.array([1,2])
+xTrue = np.array([1,2])
 
-step=0.1
-MAXITERATIONS=1000
-ABSOLUTE_STOP=1.e-5
-mode='plot_history'
+step = 0.1
+maxit = 1000
+stop_df = 1.e-5
+mode = 'plot_history'
 x0 = np.array((3,-5))
 
 
+solve.gradient(x0, f, df, xTrue=xTrue, mode=mode, maxit=maxit, stop_d=stop_df, step=step)
+
 ... minimize ...
 
+
+print('iterations=',k)
+print('last guess: x=(%f,%f)'%(x[0,k],x[1,k]))
 
 
 v_x0 = np.linspace(-5,5,500)

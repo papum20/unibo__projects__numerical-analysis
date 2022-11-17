@@ -9,6 +9,14 @@ import scipy
 IT_MAX = 1000
 TOL_X = 1.e-7
 TOL_Y = 1.e-16
+# BACKTRACKING
+ALPHA_START = 1.1
+ALPHA_MIN = 1.e-16
+RHO = 0.5
+C1 = 0.25
+ALPHA_IT_MAX = 10
+STEP = 1
+
 
 
 """ DIRECT METHODS """
@@ -146,53 +154,86 @@ def successiveApproximations(f, g, xTrue, maxit, x0:float=0, stopCriteria=stopCr
 
 	return (xk, it, errk[:it], errAbs[:it])
 
+
+
 def gradient (
 	x0:np.ndarray,
 	f:Callable[[np.ndarray], float],
-	df:Callable[[np.ndarray|ellipsis], float],
+	df:Callable[[np.ndarray], np.ndarray],
 	xTrue:np.ndarray,
-	mode, step, maxit, ABSOLUTE_STOP
+	mode,
+	maxit,
+	stop_d,
+	step:float=STEP
+) -> tuple[np.ndarray, int, np.ndarray, np.ndarray, np.ndarray] | tuple[np.ndarray, int, np.ndarray, np.ndarray, np.ndarray, np.ndarray] | ellipsis:
+	x		= np.zeros((x0.size, maxit), dtype=float)
+	fx		= np.zeros((1, maxit))
+	norm_df = np.zeros((1, maxit))					# norm (gradient(x))
+	errAbs	= np.zeros((1, maxit)) 
+
+	k = 0
+	xk:np.ndarray = np.array(x0, dtype=float)
+	
+	x[:,0] 			= xk
+	fx[:,0]			= f(xk)
+	norm_df[:,0]	= np.linalg.norm(df(xk), ord=2)
+	errAbs[:,0]		= np.linalg.norm(np.subtract(xk, xTrue), ord=2)
+
+	while (np.linalg.norm(df(xk)) > stop_d and k < maxit):
+		alphak = step_backtrack(xk, f, df)	#backtracking step
+		if(alphak == -1):
+			print("backtracking not converging")
+			return ...
+
+		k += 1
+		xk = xk - alphak * df(xk)
+		x[:,k] 			= xk
+		fx[:,k] 		= f(xk)
+		errAbs[:,k]		= np.linalg.norm(xk - xTrue, ord=2)
+		norm_df[:,k]	= np.linalg.norm(df(xk), ord=2)
+	# after loop:
+	# 	k=last iteration made (from 1 to maxit-1, 0 if noone made)
+	#	xk=last x calculated, for last k
+
+	fx = fx[:k+1]
+	errAbs = errAbs[:k+1]
+	norm_df = norm_df[:k+1]
+
+	if mode=='plot_history':	return (xk, k, x, fx, norm_df, errAbs)
+	else:						return (xk, k, fx, norm_df, errAbs)
+#
+def condition_armijo_eval(
+	xk:np.ndarray,
+	f:Callable[[np.ndarray], np.ndarray],
+	df:Callable[[np.ndarray], np.ndarray],
+	alpha,
+	c1,
+	pk:np.ndarray=np.zeros((0))
 ):
-	x = np.zeros((x0.size, maxit), dtype=float)
-	norm_d = np.zeros((1, maxit))					# norm (gradient(x))
-	function_eval_list=np.zeros((1,MAXITERATION))
-	error_list=np.zeros((1,MAXITERATION)) 
-
+	return f(xk + alpha*pk) <= f(xk) + c1*alpha * df(xk)@pk
+# backtracking procedure for the choice of the steplength
+def step_backtrack(
+	xk,
+	f,
+	df:Callable[[np.ndarray], np.ndarray],	# gradient
+	rho=RHO,
+	c1=C1,
+	maxit=ALPHA_IT_MAX,
+	alpha_min=ALPHA_MIN,
+	pk:np.ndarray=np.zeros((0))				# direction
+) -> float:
+	alpha = ALPHA_START
+	if pk.size == 0: pk = -df(np.ones(xk.shape))
 	it = 0
-	x_last = np.array(x0, dtype=float)
-	"""
-	x[:,K] = ...
-	function_eval_list[:,k]=...
-	error_list[:,k]=...
-	norm_grad_list[:,k]=...
-"""
-	while (np.linalg.norm(df(x_last))>ABSOLUTE_STOP and it < maxit):
-		
-		...
-		
-		# backtracking step
-		step = ...
-
-		if(step==-1):
-			
-			...
-
-		x_last=...
-		
-		x[:,k] =
-		function_eval_list[:,k]=
-		error_list[:,k]=
-		norm_grad_list[:,k]=
-
-	function_eval_list = 
-	error_list = 
-	norm_grad_list = 
-
-	print('iterations=',k)
-	print('last guess: x=(%f,%f)'%(x[0,k],x[1,k]))
-
-	if mode=='plot_history':
-		return (x_last,norm_grad_list, function_eval_list, error_list, k, x)
-
+	while (not(condition_armijo_eval(xk, f, df, alpha, c1, pk=pk)) and (it < maxit and alpha > alpha_min)):
+		alpha *= rho
+		it += 1
+	if it >= maxit or alpha <= alpha_min:
+		print("backtracking not converging")
+		map
+		return -1
 	else:
-		return (x_last,norm_grad_list, function_eval_list, error_list, k)
+		return alpha
+# function template
+class _FunctionScalar (Callable[[np.ndarray], float]): ...
+class _Function (Callable[[np.ndarray], np.ndarray]): ...
