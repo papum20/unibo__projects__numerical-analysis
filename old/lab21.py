@@ -34,7 +34,7 @@ x = np.ones((2,1))
 b = np.dot(A,x)
 
 btilde = np.array([[3], [1.4985]])
-xtilde = np.array([[2, 0.5]]).T
+xtilde = np.array([[2., 0.5]]).T
 
 # Verificare che xtilde è soluzione di A xtilde = btilde
 # A * xtilde = btilde
