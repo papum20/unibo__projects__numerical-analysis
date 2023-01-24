@@ -15,6 +15,11 @@ modules:
     		-	getConds	: 
 			-	getRelErrs	:
 			-	getNorms	: 
+	methods :
+		-	matIt_* : iteration matrix
+		-	the following calculate solutions with their iterative method:
+			-	jacobi	:
+			-	gaussSiedel	:
 	polynom : 
 	prints :
 		-	functions printing stuff

@@ -1,12 +1,36 @@
 import numpy as np
+import scipy
 
 
+### SPECIAL MATRIXES
 
 def tridiagonal(n, d_val, d_val_u, d_val_d):    #d=val(_u/_d): valore su diagonale (up/down)
     #A = np.diag(np.ones(n) * D_val, k=0) + np.diag(np.ones(n-1) * D-val_u, k=1) + np.diag(np.ones(n-1) * D_val_d, k=-1)    
     return np.eye(n,k=0)*d_val + np.eye(n,k=1)*d_val_u + np.eye(n,k=-1)*d_val_d
 
+# x = [[x0..xm]]
+# deg = max degree (=n)
+def vandermonde(x, deg):
+    return np.array([x**j for j in range(deg+1)]).T
 
+
+
+
+### GET (SINGLE)
+
+def condition(A, ord=2):
+	return scipy.linalg.norm(np.linalg.inv(A), ord=ord) * scipy.linalg.norm(A, ord=ord)
+
+def errAbs(A, A2):
+	return scipy.linalg.norm(np.subtract(A, A2), ord=2)
+def errRel(A, A2):
+	return scipy.linalg.norm(np.subtract(A, A2), ord=2) / scipy.linalg.norm(A, ord=2)
+
+def spectralRadius(A:np.ndarray):
+	return max(list(map(lambda x: abs(x), np.linalg.eigvals(A))))
+
+
+### GET (MULTIPLE)
 
 def getConds(A, ords={"1", "2", "fro", "inf"}):
     res = []
