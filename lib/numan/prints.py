@@ -1,19 +1,18 @@
 import matplotlib.pyplot as plt
+from mpl_toolkits.mplot3d import Axes3D 
+from mpl_toolkits import mplot3d
 import numpy as np
 import scipy
 import scipy.linalg.decomp_lu as LUdec
+from typing import Callable, Iterable
 from numan import (
 	iter,
 	matrix,
 	methods,
 	poly
 )
+import numan
 
-ORDS = ["1", "2", "fro", "inf"]
-FIGSIZE = (15,7)
-DPI = 100
-FONTSIZE = 7
-STEPS = 300
 
 
 """
@@ -25,7 +24,7 @@ def approx(
 	x:np.ndarray,
 	y,
 	n:int,	# approximation polynom degree
-	steps=STEPS
+	steps=numan.STEPS
 ):
 	N = x.size # Numero dei dati
 	A = matrix.vandermonde(x, n)
@@ -58,8 +57,8 @@ def approx(
 	print ('Errore di approssimazione con Eq. Normali: ', err_a[0])
 	print ('Errore di approssimazione con SVD: ', err_a[1])
 
-	plt.rc("font", size=FONTSIZE)
-	plt.figure(figsize=FIGSIZE)
+	plt.rc("font", size=numan.FONTSIZE)
+	plt.figure(figsize=numan.FIGSIZE)
 	plt.subplot(2,2,1)
 	plt.title('Approssimazione tramite Eq. Normali / SVD')
 	plt.plot(x_plot, y_plot[0], label="normali", color="red", marker='_')
@@ -89,7 +88,7 @@ def approxMulti(
 	x,
 	y,
 	n,	# approximation polynom degree
-	steps=STEPS
+	steps=numan.STEPS
 ):
 	N = x.size # Numero dei dati
 	A = [matrix.vandermonde(x, n1) for n1 in n]
@@ -114,8 +113,8 @@ def approxMulti(
 	print ('Errore di approssimazione con Eq. Normali: ', err_a[0])
 	print ('Errore di approssimazione con SVD: ', err_a[1])
 
-	plt.rc("font", size=FONTSIZE)
-	plt.figure(figsize=FIGSIZE)
+	plt.rc("font", size=numan.FONTSIZE)
+	plt.figure(figsize=numan.FIGSIZE)
 	plt.subplot(2,2,1)
 	plt.title('Approssimazione tramite Eq. Normali / SVD')
 	for i in range(len(n)):
@@ -146,6 +145,85 @@ def approxMulti(
 	plt.show()
 
 
+"""
+SEARCH FOR FUNCTION SOLUTION
+"""
+
+def funSolve(
+	a:float,
+	b:float,
+	f:Callable[[float], float],
+	xTrue:float,
+	methods:list[str],										#names, in same order as res
+	res:list[ tuple[float|str, int, int, np.ndarray] | tuple[float|str, int, np.ndarray, np.ndarray] ],	#results calculated with methods
+	times:list = [],
+	xvalues:int = 100,
+	shape:tuple[int, int] = (int(2), int(2))
+):
+	for (m,r,time) in iter.indexSplit([methods,res,times]):
+		print("{}:".format(m))
+		#IF ERROR
+		if type(r[0]) == type(str): print("\tError")
+		else:
+			#SOLUTION
+			print("\txTrue: ", xTrue, "\tx found: ", r[0], "\tdiff= ", xTrue - r[0])
+			print("\tf(xTrue): ", f(xTrue), "\tf(x found): ", f(r[0]), "\tdiff= ", matrix.errAbsf(f(xTrue), f(r[0])))
+		#ITERATIONS, ERRORS
+		if type(r[2]) == int: print("\titerations, max_iterations: ", r[1], r[2])
+		else: print("\titerations", r[1])
+		#TIMES
+		if len(times) > 0:
+			print("\ttime: ", time)
+
+	axis_x = np.linspace(a, b, xvalues)
+	axis_y = np.array([f(x) for x in axis_x])
+
+	## FUNCTION / SOLUTIONS
+	plt.rc("font", size=numan.FONTSIZE)
+	plt.figure(figsize=numan.FIGSIZE)
+	ind = 1
+	plt.subplot(shape[0], shape[1], ind)
+	plt.plot(axis_x, axis_y, label="f(x)")
+	plt.plot(xTrue, f(xTrue), label="xTrue", marker="o")
+	for i in range(len(methods)):
+		x = res[i][0]
+		if(type(x) != str):
+			plt.subplot(shape[0], shape[1], ind)
+			plt.plot(x, f(float(x)), label=methods[i], marker="|", markersize=4)
+	
+	plt.title("solutions")
+	plt.legend()
+	## ABSOLUTE ERROR
+	ind += 1
+	plt.subplot(shape[0], shape[1], ind)
+	for i in range(len(methods)):
+		if(type(res[i][0]) != str):
+			axis_it = np.arange(0, res[i][1], 1)
+			plt.subplot(shape[0], shape[1], ind)
+			plt.plot(axis_it, res[i][3], label=methods[i], marker="x")
+	
+	plt.title("errors (absolute) / iterations")
+	plt.legend()
+	plt.xlabel("iterations")
+	plt.ylabel("errors (abs)")
+	## RELATIVE ERROR
+	ind += 1
+	plt.subplot(shape[0], shape[1], ind)
+	for i in range(len(methods)):
+		if type(res[i][0]) != str and type(res[i][2]) == np.ndarray:
+			axis_it = np.arange(0, res[i][1], 1)
+			plt.subplot(shape[0], shape[1], ind)
+			plt.plot(axis_it, res[i][2], label=methods[i], marker="x")
+	
+	plt.title("errors (between iterations) / iterations")
+	plt.legend()
+	plt.xlabel("iterations")
+	plt.ylabel("errors (it)")
+
+	plt.show()
+	
+
+
 
 """
 PRINT DATA ON MATRIX EQUATIONS
@@ -155,7 +233,7 @@ def matEq(
 	A:np.ndarray,
 	x:np.ndarray,
 	b:np.ndarray,
-	ords:list[str]=ORDS,
+	ords:list[str]=numan.ORDS,
 	more_mat:list[np.ndarray|np.floating]=[],
 	more_name:list[str]=[]
 ):
@@ -179,7 +257,7 @@ def matEq_lu(
 	A:np.ndarray,
 	x:np.ndarray,
 	b:np.ndarray,
-	ords:list[str]=ORDS,
+	ords:list[str]=numan.ORDS,
 	more_mat:list[np.ndarray|np.floating]=[],
 	more_name:list[str]=[]
 ):
@@ -197,7 +275,7 @@ def matEq_cholesky(
 	A:np.ndarray,
 	x:np.ndarray,
 	b:np.ndarray,
-	ords:list[str]=ORDS,
+	ords:list[str]=numan.ORDS,
 	more_mat:list[np.ndarray|np.floating]=[],
 	more_name:list[str]=[]
 ):
@@ -212,3 +290,55 @@ def matEq_cholesky(
 	more_name.extend(("L", "A_chol", "A_err_a", "y", "x_chol", "x_err_a"))
 	matEq(A, x, b, ords, more_mat, more_name)
 
+
+"""
+OPTIMIZATION
+"""
+
+def optim(
+	f:Callable[[np.ndarray], float],
+	xt:list,
+	yt:list,
+	labels:list[tuple[str, str]],
+	shape:tuple[int, int] = (2,3)
+) :
+	x = np.linspace(1,2.5,100)
+	y = np.linspace(0,1.5, 100)
+	X, Y = np.meshgrid(x, y)
+	Z = f(np.ndarray([X,Y]))
+
+	plt.rc("font", size=numan.FONTSIZE)
+	plt.figure(figsize=numan.FIGSIZE)
+	ind = 1
+
+	'''plots'''
+
+	for (x1, y1, labels1) in iter.indexSplit([xt, yt, labels]):
+		plt.subplot(shape[0], shape[1], ind, projection='3d')
+		plt.plot(x1, y1)
+		plt.xlabel(labels1[0])
+		plt.ylabel(labels1[1])
+		plt.title(labels1[0] + ' / ' + labels1[1])
+		ind += 1
+
+	# 3d plots
+	plt.subplot(shape[0], shape[1], ind, projection='3d')
+	ax1 = plt.axes(projection='3d')
+	ax1.plot_surface(X, Y, Z, cmap='viridis')
+	ax1.set_title('Surface plot')
+	ax1.view_init(elev=20)
+
+	ind += 1
+	plt.subplot(shape[0], shape[1], ind, projection='3d')
+	ax2 = plt.axes(projection='3d')
+	ax2.plot_surface(X, Y, Z, cmap='viridis')
+	ax2.set_title('Surface plot from a different view')
+	ax2.view_init(elev=5)
+	plt.show()
+
+	# contours
+	ind += 1
+	plt.subplot(shape[0], shape[1], ind, projection='3d')
+	contours = plt.contour(X, Y, Z, levels=30)
+	plt.title('Contour plot')
+	plt.show()

@@ -1,0 +1,3 @@
+DOMANDE:
+1-	polyrn: gradiente: condizioni d'arresto:
+		codice dice df > tol (wikipedia: != 0), appunti/slide df/df e altra condizione

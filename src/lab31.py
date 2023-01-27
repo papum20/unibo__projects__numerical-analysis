@@ -6,14 +6,7 @@ SCRIPT_PATH="C:/users/danie/cloud-drive/programm/projects/unibo/numerical-analys
 os.chdir(SCRIPT_PATH)
 
 import numpy as np
-import matplotlib.pyplot as plt
-import pandas as pd
-import scipy.linalg
 from numan import (
-	iter,
-	matrix,
-	methods,
-	poly,
 	prints
 )
 

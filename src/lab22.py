@@ -13,10 +13,8 @@ import scipy.linalg.decomp_lu as LUdec
 import time
 
 from numan import (
-	iter,
 	matrix,
-	methods,
-	prints
+	methods
 )
 
 

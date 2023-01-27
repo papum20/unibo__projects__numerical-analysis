@@ -18,12 +18,14 @@ def vandermonde(x, deg):
 
 ### GET (SINGLE)
 
-def condition(A, ord=2):
+def condition(A:np.ndarray, ord=2):
 	return scipy.linalg.norm(np.linalg.inv(A), ord=ord) * scipy.linalg.norm(A, ord=ord)
 
-def errAbs(A, A2):
+def errAbs(A:np.ndarray, A2:np.ndarray):
 	return scipy.linalg.norm(np.subtract(A, A2), ord=2)
-def errRel(A, A2):
+def errAbsf(A:float, A2:float):
+	return scipy.linalg.norm([A-A2], ord=2)
+def errRel(A:np.ndarray, A2:np.ndarray):
 	return scipy.linalg.norm(np.subtract(A, A2), ord=2) / scipy.linalg.norm(A, ord=2)
 
 def spectralRadius(A:np.ndarray):
