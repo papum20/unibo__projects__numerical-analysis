@@ -1,9 +1,5 @@
 import sys
 sys.path.append("lib")
-sys.path.append("../lib")
-import os
-SCRIPT_PATH="C:/users/danie/cloud-drive/programm/projects/unibo/numerical-analysis/src"
-os.chdir(SCRIPT_PATH)
 
 import matplotlib.pyplot as plt
 import numpy as np

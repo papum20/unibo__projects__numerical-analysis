@@ -305,16 +305,18 @@ def optim(
 	x = np.linspace(1,2.5,100)
 	y = np.linspace(0,1.5, 100)
 	X, Y = np.meshgrid(x, y)
-	Z = f(np.ndarray([X,Y]))
+	Z = f(np.array([X, Y]))
+
 
 	plt.rc("font", size=numan.FONTSIZE)
-	plt.figure(figsize=numan.FIGSIZE)
+	fig = plt.figure(figsize=numan.FIGSIZE)
 	ind = 1
 
 	'''plots'''
 
 	for (x1, y1, labels1) in iter.indexSplit([xt, yt, labels]):
-		plt.subplot(shape[0], shape[1], ind, projection='3d')
+		#fig.add_subplot(shape[0], shape[1], ind)
+		plt.subplot(shape[0], shape[1], ind)
 		plt.plot(x1, y1)
 		plt.xlabel(labels1[0])
 		plt.ylabel(labels1[1])
@@ -322,23 +324,54 @@ def optim(
 		ind += 1
 
 	# 3d plots
-	plt.subplot(shape[0], shape[1], ind, projection='3d')
-	ax1 = plt.axes(projection='3d')
+	ax1 = fig.add_subplot(shape[0], shape[1], ind, projection='3d')
+	#ax1 = plt.axes(projection='3d')
 	ax1.plot_surface(X, Y, Z, cmap='viridis')
 	ax1.set_title('Surface plot')
+	ax1.set_xlabel("x")
+	ax1.set_ylabel("y")
 	ax1.view_init(elev=20)
 
 	ind += 1
-	plt.subplot(shape[0], shape[1], ind, projection='3d')
-	ax2 = plt.axes(projection='3d')
+	ax2 = fig.add_subplot(shape[0], shape[1], ind, projection='3d')
 	ax2.plot_surface(X, Y, Z, cmap='viridis')
 	ax2.set_title('Surface plot from a different view')
+	ax2.set_xlabel("x")
+	ax2.set_ylabel("y")
 	ax2.view_init(elev=5)
-	plt.show()
 
 	# contours
 	ind += 1
-	plt.subplot(shape[0], shape[1], ind, projection='3d')
+	fig.add_subplot(shape[0], shape[1], ind, projection="3d")
 	contours = plt.contour(X, Y, Z, levels=30)
 	plt.title('Contour plot')
+	plt.show()
+
+
+
+""" GENERAL """
+
+def plot(
+	x:list[np.ndarray],
+	y:list[np.ndarray],
+	labels:list[tuple[str, str]],
+	shape:tuple[int,int]=(3,4)
+):
+	plt.rc("font", size=numan.FONTSIZE)
+	plt.figure(figsize=numan.FIGSIZE)
+	ind = 1
+
+	for (x1, y1, labels1) in iter.indexSplit([x, y, labels]):
+		plt.subplot(shape[0], shape[1], ind)
+		plt.plot(x1, y1)
+		plt.xlabel(labels1[0])
+		plt.ylabel(labels1[1])
+		plt.title(labels1[0] + ' / ' + labels1[1])
+		ind += 1
+		plt.subplot(shape[0], shape[1], ind)
+		plt.loglog(x1, y1)
+		plt.xlabel(labels1[0])
+		plt.ylabel(labels1[1])
+		plt.title(labels1[0] + ' / ' + labels1[1])
+		ind += 1
 	plt.show()

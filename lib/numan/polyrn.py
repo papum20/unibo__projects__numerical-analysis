@@ -15,21 +15,23 @@ def gradient(
 	xTrue:np.ndarray,
 	tol_df:float=numan.TOL_DF,
 	maxit:int=numan.MAXIT,
-	alpha0:float=numan.ALPHA_0
+	alpha0:float=numan.ALPHA_0,
+	alpha_varies:bool=True
 ) -> tuple[float|str, np.ndarray, int, np.ndarray, np.ndarray, np.ndarray] : 
 
 	x = np.zeros((maxit+1, x0.size))	#maxit rows, x0.size cols
 	x[0] = x0
-	fx = np.zeros((maxit+1, 1))
+	fx = np.zeros(maxit+1)
 	fx[0] = f(x0)
-	norm_df = np.zeros((maxit+1, 1)) 
+	norm_df = np.zeros(maxit+1) 
 	norm_df[0] = np.linalg.norm(df(x0), ord=2)
-	err_a = np.zeros((maxit+1, 1)) 
+	err_a = np.zeros(maxit+1) 
 	err_a[0] = matrix.errAbs(x0, xTrue)
+	alphak = alpha0
 
 	it = 0
 	while (np.linalg.norm(df(x[it]), ord=2) > tol_df and it < maxit):
-		alphak = backtrack(x[it], f, df, alpha0=alpha0)
+		if alpha_varies: alphak = backtrack(x[it], f, df, alpha0=alpha0)
 		if(alphak == -1):
 			print("Error")
 			return ("Error", x, it, fx[:it+1], norm_df[:it+1], err_a[:it+1])
@@ -39,7 +41,7 @@ def gradient(
 		norm_df[it] = np.linalg.norm(df(x[it]), ord=2)		
 		err_a[it] = matrix.errAbs(x[it], xTrue)
 
-	return (float(x[it]), x, it, fx[:it+1], norm_df[:it+1], err_a[:it+1])
+	return (x[it], x, it, fx[:it+1], norm_df[:it+1], err_a[:it+1])
 
 
 def backtrack(
@@ -55,7 +57,7 @@ def backtrack(
 ) -> float:
 	alpha = alpha0
 	# if pk not specified, by default is -gradient
-	if pk.size == 0: pk = -df(np.ones(xk.size))
+	if pk.size == 0: pk = -df(xk)
 	it = 0
 	while not(armijo(xk, f, df, alpha, c1=c1, pk=pk)) and it < maxit and alpha > tol_alpha:
 		alpha *= rho
@@ -74,4 +76,4 @@ def armijo(
 	c1:float=numan.C1,
 	pk:np.ndarray=np.zeros((0))
 ) -> bool:
-	return f(xk + alpha*pk) <= f(xk) + c1*alpha * df(xk)@pk
+	return f(xk + alpha*pk) <= f(xk) + c1*alpha * df(xk).T@pk
