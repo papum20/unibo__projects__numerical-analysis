@@ -24,8 +24,11 @@ modules:
 	prints :
 		-	functions printing stuff
 			-	matEq	: matrix equation, plus optional specified arrays/numbers to print, if present,
-			-	matEq_cholesky	:
-			-	matEq_lu	:
+			-	matEq_cholesky :
+			-	matEq_lu :
+            -	optim	: (for f:R2->R) plot pairs of x,y, with related labels; plus, plot 3d figures
+            -	plot	: plot all pairs of x,y, with related lables, in the same figure
+            -	plot_sync : plot, but show multiple figures at the same time
 	solve : 
 """
 

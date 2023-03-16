@@ -320,7 +320,7 @@ def optim(
 		plt.plot(x1, y1)
 		plt.xlabel(labels1[0])
 		plt.ylabel(labels1[1])
-		plt.title(labels1[0] + ' / ' + labels1[1])
+		plt.title(labels1[1] + ' / ' + labels1[0])
 		ind += 1
 
 	# 3d plots
@@ -366,12 +366,40 @@ def plot(
 		plt.plot(x1, y1)
 		plt.xlabel(labels1[0])
 		plt.ylabel(labels1[1])
-		plt.title(labels1[0] + ' / ' + labels1[1])
+		plt.title(labels1[1] + ' / ' + labels1[0])
 		ind += 1
 		plt.subplot(shape[0], shape[1], ind)
 		plt.loglog(x1, y1)
 		plt.xlabel(labels1[0])
 		plt.ylabel(labels1[1])
-		plt.title(labels1[0] + ' / ' + labels1[1])
+		plt.title(labels1[1] + ' / ' + labels1[0])
 		ind += 1
+	plt.show()
+
+def plot_sync(
+	x:list[list[np.ndarray]],
+	y:list[list[np.ndarray]],
+	labels:list[list[tuple[str, str]]],
+	shape:tuple[int,int]=(3,4)
+):
+	plt.rc("font", size=numan.FONTSIZE)
+	figures = []
+
+	for fg in range(len(x)):
+		figures.append(plt.figure(figsize=numan.FIGSIZE))
+		ind = 1
+
+		for (x1, y1, labels1) in iter.indexSplit([x[fg], y[fg], labels[fg]]):
+			plt.subplot(shape[0], shape[1], ind)
+			plt.plot(x1, y1)
+			plt.xlabel(labels1[0])
+			plt.ylabel(labels1[1])
+			plt.title(labels1[1] + ' / ' + labels1[0])
+			ind += 1
+			plt.subplot(shape[0], shape[1], ind)
+			plt.loglog(x1, y1)
+			plt.xlabel(labels1[0])
+			plt.ylabel(labels1[1])
+			plt.title(labels1[1] + ' / ' + labels1[0])
+			ind += 1
 	plt.show()
