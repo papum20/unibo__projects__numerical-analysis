@@ -1,17 +1,18 @@
 import sys
 sys.path.append("lib")
 
-import numpy as np
 from numan import (
+	Constants,
 	polyrn,
 	prints
 )
 
 import numpy as np
+from numpy import fft
 import matplotlib.pyplot as plt
 from skimage import data, metrics
+import scipy
 from scipy import signal
-from numpy import fft
 from scipy.optimize import minimize
 
 np.random.seed(0)
@@ -52,4 +53,64 @@ def AT(x, K):
 	return np.real(fft.ifft2(np.conj(K) * x))
 
 
-a = data.camera() # type: ignore
+
+
+# shape=(nrows,ncols,next_index)
+def drawImg(img, shape:list[int]):
+	ax = plt.subplot(shape[0], shape[1], shape[2])
+	ax.imshow(img, cmap='gray')
+	shape[2] += 1
+
+
+
+FIG_SHAPE = [1,3,1]
+# load img
+camera = data.camera().astype(np.float64) / 255.0
+
+print(f"camera: {camera.shape}")
+fig = plt.figure(figsize=Constants.FIGSIZE)
+drawImg(camera, FIG_SHAPE)
+
+# apply blur
+## create kernel
+kernlen = 24
+sigma = 3
+ker = gaussian_kernel(kernlen, sigma)
+print(f"kernel: {ker.shape}")
+print(ker)
+## create K
+K = psf_fft(ker, kernlen, camera.shape)
+print(f"K: {K.shape}")
+print(K)
+## apply blur
+blurred = A(camera, K)
+
+drawImg(blurred, FIG_SHAPE)
+
+# apply noise
+dev_std = 0.02
+noise = np.random.normal(scale=(np.ones(camera.shape)*dev_std))
+print(f"noise: {noise.shape}")
+print(noise)
+noised = A(blurred, noise)
+
+drawImg(noised, FIG_SHAPE)
+
+
+plt.show()
+
+
+# Peak Signal Noise Ratio
+psnr = metrics.peak_signal_noise_ratio(camera, noised)
+# Mean Squared Error
+mse = metrics.mean_squared_error(camera, noised)
+
+print(f'peak signal noise ration (PSNR) = {psnr},\nmean squared error (MSE) = {mse}')
+
+
+# SOLUZIONE NAIVE
+fmin = lambda A,b,x: (scipy.linalg.norm(A*x - b, ord=2) ** 2) / 2
+dfmin = lambda A,b,x: A.T*A*x - A.T*b
+f = lambda x: fmin(camera, noised, x)
+df = lambda x: dfmin(camera, noised, x)
+naive = minimize(f, df)

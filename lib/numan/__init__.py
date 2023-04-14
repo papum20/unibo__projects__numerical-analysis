@@ -35,23 +35,25 @@ modules:
 
 
 
-#prints
-ORDS = ["1", "2", "fro", "inf"]
-FIGSIZE = (15,7)
-DPI = 100
-FONTSIZE = 7
-STEPS = 300
+class Constants:
 
-#poly
-FLOAT_MANT_MIN = 1.e-16		#min mantissa number
-TOL_X = 1.e-7
-TOL_Y = 1.e-16
+	#prints
+	ORDS = ["1", "2", "fro", "inf"]
+	FIGSIZE = (15,7)
+	DPI = 100
+	FONTSIZE = 7
+	STEPS = 300
 
-#polyrn
-ALPHA_0 = 1.1
-C1 = 0.25
-MAXIT = 1000
-MAXIT_ALPHA = 10
-RHO = 0.5
-TOL_ALPHA = 1.e-16
-TOL_DF = 1.e-5
+	#poly
+	FLOAT_MANT_MIN = 1.e-16		#min mantissa number
+	TOL_X = 1.e-7
+	TOL_Y = 1.e-16
+
+	#polyrn
+	ALPHA_0 = 1.1
+	C1 = 0.25
+	MAXIT = 1000
+	MAXIT_ALPHA = 10
+	RHO = 0.5
+	TOL_ALPHA = 1.e-16
+	TOL_DF = 1.e-5

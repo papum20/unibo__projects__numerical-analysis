@@ -2,9 +2,9 @@ import math
 import numpy as np
 from typing import Callable
 from numan import (
+	Constants,
 	matrix
 )
-import numan
 
 
 
@@ -25,8 +25,8 @@ def bisection(
 	b:float,
 	f:Callable[[float], float],
 	xTrue:float,
-	tolx:float=numan.TOL_X,
-	toly:float=numan.TOL_Y
+	tolx:float=Constants.TOL_X,
+	toly:float=Constants.TOL_Y
 ) -> tuple[float|str, int, float, np.ndarray] :
 
 	k = math.ceil(math.log((b - a) / tolx, 2))		# numero minimo di iterazioni per avere un errore minore di tolx
@@ -41,7 +41,7 @@ def bisection(
 	ak, bk, ck = a, b, 0
 	for it in range(1, k):
 		# error case ()
-		if b - a < numan.FLOAT_MANT_MIN:
+		if b - a < Constants.FLOAT_MANT_MIN:
 			print('Error: l\'intervallo è troppo piccolo ')
 			return ("Error", it, k, err_a)
 		ck = ak + (bk - ak) / 2
@@ -80,8 +80,8 @@ def successiveApprox(
 	g:Callable[[float, list], float],
 	x0:float=0,
 	stopCriteria:Callable = stopCriteria_abs,
-	tolx:float=numan.TOL_X,
-	toly:float=numan.TOL_Y
+	tolx:float=Constants.TOL_X,
+	toly:float=Constants.TOL_Y
 ) -> tuple[float|str, int, np.ndarray, np.ndarray] :
 
 	err_a = np.zeros(maxit + 1, dtype=float)
@@ -112,7 +112,7 @@ def newton(
 	xTrue:float,
 	x0:float=0,
 	stopCriteria:Callable = stopCriteria_abs,
-	tolx:float=numan.TOL_X,
-	toly:float=numan.TOL_Y
+	tolx:float=Constants.TOL_X,
+	toly:float=Constants.TOL_Y
 ) -> tuple[float|str, int, np.ndarray, np.ndarray] :
 	return successiveApprox(f, df, maxit, xTrue, g_newton, x0, stopCriteria, tolx, toly)

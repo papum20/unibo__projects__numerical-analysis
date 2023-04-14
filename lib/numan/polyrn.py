@@ -1,9 +1,9 @@
 import numpy as np
 from typing import Callable
 from numan import (
+	Constants,
 	matrix
 )
-import numan
 
 
 
@@ -13,9 +13,9 @@ def gradient(
 	df:Callable[[np.ndarray], np.ndarray],
 	x0:np.ndarray,
 	xTrue:np.ndarray,
-	tol_df:float=numan.TOL_DF,
-	maxit:int=numan.MAXIT,
-	alpha0:float=numan.ALPHA_0,
+	tol_df:float=Constants.TOL_DF,
+	maxit:int=Constants.MAXIT,
+	alpha0:float=Constants.ALPHA_0,
 	alpha_varies:bool=True
 ) -> tuple[float|str, np.ndarray, int, np.ndarray, np.ndarray, np.ndarray] : 
 
@@ -49,11 +49,11 @@ def backtrack(
 	f:Callable[[np.ndarray], float],
 	df:Callable[[np.ndarray], np.ndarray],	# gradient
 	pk:np.ndarray=np.zeros((0)),			# direction
-	rho:float=numan.RHO,
-	c1:float=numan.C1,
-	alpha0:float=numan.ALPHA_0,
-	maxit:int=numan.MAXIT_ALPHA,
-	tol_alpha:float=numan.TOL_ALPHA,
+	rho:float=Constants.RHO,
+	c1:float=Constants.C1,
+	alpha0:float=Constants.ALPHA_0,
+	maxit:int=Constants.MAXIT_ALPHA,
+	tol_alpha:float=Constants.TOL_ALPHA,
 ) -> float:
 	alpha = alpha0
 	# if pk not specified, by default is -gradient
@@ -73,7 +73,7 @@ def armijo(
 	f:Callable[[np.ndarray], float],
 	df:Callable[[np.ndarray], np.ndarray],
 	alpha,
-	c1:float=numan.C1,
+	c1:float=Constants.C1,
 	pk:np.ndarray=np.zeros((0))
 ) -> bool:
 	return f(xk + alpha*pk) <= f(xk) + c1*alpha * df(xk).T@pk

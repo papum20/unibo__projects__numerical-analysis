@@ -6,12 +6,13 @@ import scipy
 import scipy.linalg.decomp_lu as LUdec
 from typing import Callable, Iterable
 from numan import (
+	Constants,
 	iter,
 	matrix,
 	methods,
 	poly
 )
-import numan
+
 
 
 
@@ -24,7 +25,7 @@ def approx(
 	x:np.ndarray,
 	y,
 	n:int,	# approximation polynom degree
-	steps=numan.STEPS
+	steps=Constants.STEPS
 ):
 	N = x.size # Numero dei dati
 	A = matrix.vandermonde(x, n)
@@ -57,8 +58,8 @@ def approx(
 	print ('Errore di approssimazione con Eq. Normali: ', err_a[0])
 	print ('Errore di approssimazione con SVD: ', err_a[1])
 
-	plt.rc("font", size=numan.FONTSIZE)
-	plt.figure(figsize=numan.FIGSIZE)
+	plt.rc("font", size=Constants.FONTSIZE)
+	plt.figure(figsize=Constants.FIGSIZE)
 	plt.subplot(2,2,1)
 	plt.title('Approssimazione tramite Eq. Normali / SVD')
 	plt.plot(x_plot, y_plot[0], label="normali", color="red", marker='_')
@@ -88,7 +89,7 @@ def approxMulti(
 	x,
 	y,
 	n,	# approximation polynom degree
-	steps=numan.STEPS
+	steps=Constants.STEPS
 ):
 	N = x.size # Numero dei dati
 	A = [matrix.vandermonde(x, n1) for n1 in n]
@@ -113,8 +114,8 @@ def approxMulti(
 	print ('Errore di approssimazione con Eq. Normali: ', err_a[0])
 	print ('Errore di approssimazione con SVD: ', err_a[1])
 
-	plt.rc("font", size=numan.FONTSIZE)
-	plt.figure(figsize=numan.FIGSIZE)
+	plt.rc("font", size=Constants.FONTSIZE)
+	plt.figure(figsize=Constants.FIGSIZE)
 	plt.subplot(2,2,1)
 	plt.title('Approssimazione tramite Eq. Normali / SVD')
 	for i in range(len(n)):
@@ -179,8 +180,8 @@ def funSolve(
 	axis_y = np.array([f(x) for x in axis_x])
 
 	## FUNCTION / SOLUTIONS
-	plt.rc("font", size=numan.FONTSIZE)
-	plt.figure(figsize=numan.FIGSIZE)
+	plt.rc("font", size=Constants.FONTSIZE)
+	plt.figure(figsize=Constants.FIGSIZE)
 	ind = 1
 	plt.subplot(shape[0], shape[1], ind)
 	plt.plot(axis_x, axis_y, label="f(x)")
@@ -233,7 +234,7 @@ def matEq(
 	A:np.ndarray,
 	x:np.ndarray,
 	b:np.ndarray,
-	ords:list[str]=numan.ORDS,
+	ords:list[str]=Constants.ORDS,
 	more_mat:list[np.ndarray|np.floating]=[],
 	more_name:list[str]=[]
 ):
@@ -257,7 +258,7 @@ def matEq_lu(
 	A:np.ndarray,
 	x:np.ndarray,
 	b:np.ndarray,
-	ords:list[str]=numan.ORDS,
+	ords:list[str]=Constants.ORDS,
 	more_mat:list[np.ndarray|np.floating]=[],
 	more_name:list[str]=[]
 ):
@@ -275,7 +276,7 @@ def matEq_cholesky(
 	A:np.ndarray,
 	x:np.ndarray,
 	b:np.ndarray,
-	ords:list[str]=numan.ORDS,
+	ords:list[str]=Constants.ORDS,
 	more_mat:list[np.ndarray|np.floating]=[],
 	more_name:list[str]=[]
 ):
@@ -308,8 +309,8 @@ def optim(
 	Z = f(np.array([X, Y]))
 
 
-	plt.rc("font", size=numan.FONTSIZE)
-	fig = plt.figure(figsize=numan.FIGSIZE)
+	plt.rc("font", size=Constants.FONTSIZE)
+	fig = plt.figure(figsize=Constants.FIGSIZE)
 	ind = 1
 
 	'''plots'''
@@ -357,8 +358,8 @@ def plot(
 	labels:list[tuple[str, str]],
 	shape:tuple[int,int]=(3,4)
 ):
-	plt.rc("font", size=numan.FONTSIZE)
-	plt.figure(figsize=numan.FIGSIZE)
+	plt.rc("font", size=Constants.FONTSIZE)
+	plt.figure(figsize=Constants.FIGSIZE)
 	ind = 1
 
 	for (x1, y1, labels1) in iter.indexSplit([x, y, labels]):
@@ -382,11 +383,11 @@ def plot_sync(
 	labels:list[list[tuple[str, str]]],
 	shape:tuple[int,int]=(3,4)
 ):
-	plt.rc("font", size=numan.FONTSIZE)
+	plt.rc("font", size=Constants.FONTSIZE)
 	figures = []
 
 	for fg in range(len(x)):
-		figures.append(plt.figure(figsize=numan.FIGSIZE))
+		figures.append(plt.figure(figsize=Constants.FIGSIZE))
 		ind = 1
 
 		for (x1, y1, labels1) in iter.indexSplit([x[fg], y[fg], labels[fg]]):
