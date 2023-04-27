@@ -404,3 +404,20 @@ def plot_sync(
 			plt.title(labels1[1] + ' / ' + labels1[0])
 			ind += 1
 	plt.show()
+
+
+def img(img, shape:list[int]) -> None :
+	"""
+	add img to current open pyplot, increase shape index.
+
+	Parameters
+	---
+	`img` : iamge
+	`shape` : [nrows, ncols, index]
+
+	-	Must be initialized and used correctly.
+		Img is drawn at index, then index is increased
+	"""
+	ax = plt.subplot(shape[0], shape[1], shape[2])
+	ax.imshow(img, cmap='gray')
+	shape[2] += 1
