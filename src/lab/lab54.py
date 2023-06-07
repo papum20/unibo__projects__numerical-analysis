@@ -2,7 +2,6 @@ import sys
 sys.path.append("lib")
 
 from numan import (
-	Constants,
 	prints
 )
 
@@ -13,7 +12,6 @@ from skimage import data, metrics
 
 
 
-np.random.seed(0)
 
 # Crea un kernel Gaussiano di dimensione kernlen e deviazione standard sigma
 def gaussian_kernel(kernlen, sigma):
@@ -105,6 +103,6 @@ for (kernlen, sigma) in kernlens_sigmas:
 
 	corrupted()
 	naive()
-	#tikhonov()
+	tikhonov()
 
 plt.show()

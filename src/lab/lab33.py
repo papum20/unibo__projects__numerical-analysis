@@ -3,16 +3,15 @@ sys.path.append("lib")
 
 import numpy as np
 from numan import (
-	iter,
 	prints
 )
 
 
-""" LLS / SVD """
+print("""\n\n LLS / SVD\n """)
 
-FIGSIZE = (15,7)
-FONTSIZE = 7
-STEPS = 300
+FIGSIZE		= (15,7)
+FONTSIZE	= 7
+STEPS		= 300
 
 
 """ 3 """
@@ -32,7 +31,7 @@ domains =	(
 n = (1,2,3,5,7)
 N = 10	#punti noti
 x = [np.linspace(D[0], D[1], N) for D in domains]
-y = [np.array([f(x1) for x1 in D]) for (f,D) in iter.indexSplit([functions, x])]
+y = [np.array([f(x1) for x1 in D]) for (f,D) in zip(functions, x)]
 x_plot = [np.linspace(D[0], D[1], STEPS) for D in domains]
 
 

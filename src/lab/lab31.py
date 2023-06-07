@@ -7,11 +7,11 @@ from numan import (
 )
 
 
-""" LLS / SVD """
+print("""\n\n LLS / SVD \n""")
 
-FIGSIZE = (15,7)
-FONTSIZE = 7
-STEPS = 300
+FIGSIZE		= (15,7)
+FONTSIZE	= 7
+STEPS		= 300
 
 
 """ 1 """

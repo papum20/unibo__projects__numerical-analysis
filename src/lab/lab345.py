@@ -7,7 +7,6 @@ import pandas as pd
 import scipy.linalg
 from skimage import data
 from numan import (
-	iter,
 	matrix,
 	methods,
 	poly,
@@ -16,26 +15,26 @@ from numan import (
 
 
 
-FIGSIZE = (15,7)
-FONTSIZE = 5
-STEPS = 300
-PLOTSHAPE = (4, 4)
+FIGSIZE		= (15,7)
+FONTSIZE	= 5
+STEPS		= 300
+PLOTSHAPE	= (4, 4)
 
 
 
 def analyzeImg(A, p_min, p_max, p_step, plot_shape=PLOTSHAPE):
 
-	A_p = {}
-	err_r = {}
-	c = {}
+	A_p		= {}
+	err_r	= {}
+	c		= {}
 
 	(U, s, VT) = scipy.linalg.svd(A)
 	for p in range(p_min, p_max, p_step):
-		p = int(p)
-		A_t = sum([np.outer(U[:,i], VT[i]*s[i]) for i in range(p)])
-		A_p[p] = (A_t)
+		p		= int(p)
+		A_t		= sum([np.outer(U[:,i], VT[i]*s[i]) for i in range(p)])
+		A_p[p]	= (A_t)
 		err_r[p] = (matrix.errRel(A, A_p[p]))
-		c[p] = (min(A_p[p].shape) / p - 1)
+		c[p]	= (min(A_p[p].shape) / p - 1)
 
 	x_plot = np.arange(p_min, p_max, p_step)
 
@@ -89,6 +88,7 @@ def analyzeImg(A, p_min, p_max, p_step, plot_shape=PLOTSHAPE):
 A = data.coins()
 p_min, p_max, p_step = (1, 10+1, 1)	#range per p (min, max, step)
 
+print("\n\nCOINS 1\n")
 analyzeImg(A, p_min, p_max, p_step)
 
 """ 5 """
@@ -97,17 +97,20 @@ analyzeImg(A, p_min, p_max, p_step)
 A = data.coins()
 p_min, p_max, p_step = (1, 22, 1)	#range per p (min, max, step)
 
+print("\n\nCOINS 2\n")
 analyzeImg(A, p_min, p_max, p_step, (5,5))
 
 #camera
 A = data.camera()
 p_min, p_max, p_step = (1, 10+1, 1)	#range per p (min, max, step)
 
+print("\n\CAMERA 1\n")
 analyzeImg(A, p_min, p_max, p_step)
 
 #
 
-A = data.human_mitosis()
+A = data.horse()
 p_min, p_max, p_step = (1, 16, 3)	#range per p (min, max, step)
 
+print("\n\MITOSIS 1\n")
 analyzeImg(A, p_min, p_max, p_step)

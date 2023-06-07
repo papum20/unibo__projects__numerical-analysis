@@ -27,19 +27,18 @@ def approx(
 	n:int,	# approximation polynom degree
 	steps=Constants.STEPS
 ):
-	N = x.size # Numero dei dati
+	#N = x.size # Numero dei dati
 	A = matrix.vandermonde(x, n)
 
-	""" risoluzione 2 metodi """
 	# ATA alpha=ATy
 	alpha = {
-		"normali" : methods.lu(A.T@A, A.T@y),
-		"svd" : methods.svd(A, y)
+		"normali"	: methods.lu(A.T@A, A.T@y),
+		"svd"		: methods.svd(A, y)
 	}
-	my_y = [[poly.evaluate(a, x1) for x1 in x] for a in alpha.values()]
-	err_a = [np.absolute(np.subtract(y, my_y1)) for my_y1 in my_y]
+	my_y	= [[poly.evaluate(a, x1) for x1 in x] for a in alpha.values()]
+	err_abs	= [np.absolute(np.subtract(y, my_y1)) for my_y1 in my_y]
 
-	x_plot = np.linspace(x[0], x[x.size-1], steps)
+	x_plot = np.linspace(x[0], x[-1], steps)
 	y_plot = [[poly.evaluate(a, x1) for x1 in x_plot] for a in alpha.values()]
 
 	print("A = \n", A)
@@ -47,7 +46,7 @@ def approx(
 	print('Shape of x:', x.shape)
 	print('Shape of y:', y.shape, "\n")
 	for (_key, _val) in alpha.items():
-		print("alpha {} = {}".format(_key, _val))
+		print(f"alpha {_key} = {_val}")
 
 	print("x: ", x)
 	print("y, my_y: ")
@@ -55,8 +54,8 @@ def approx(
 	print(my_y[0])
 	print(my_y[1])
 
-	print ('Errore di approssimazione con Eq. Normali: ', err_a[0])
-	print ('Errore di approssimazione con SVD: ', err_a[1])
+	print ('Errore di approssimazione con Eq. Normali: ', err_abs[0])
+	print ('Errore di approssimazione con SVD: ', err_abs[1])
 
 	plt.rc("font", size=Constants.FONTSIZE)
 	plt.figure(figsize=Constants.FIGSIZE)
@@ -76,8 +75,8 @@ def approx(
 	plt.plot(x, y, label="xTrue", color="green", marker="o")
 	plt.subplot(2,2,4)
 	plt.title('errori ass per eq. normali / svd')
-	plt.plot(x, err_a[0], label="normali", color="red", marker='_')
-	plt.plot(x, err_a[1], label="svd", color="blue", marker='.', linewidth=1)
+	plt.plot(x, err_abs[0], label="normali", color="red", marker='_')
+	plt.plot(x, err_abs[1], label="svd", color="blue", marker='.', linewidth=1)
 	plt.xlabel("x")
 	plt.ylabel("err. abs.")
 	plt.legend(loc="upper left")
@@ -109,7 +108,7 @@ def approxMulti(
 	print('Shape of x:', x.shape)
 	print('Shape of y:', y.shape, "\n")
 	for (_key, _val) in alpha.items():
-		print("alpha {} = {}".format(_key, _val))
+		print(f"alpha {_key} = {_val}")
 
 	print ('Errore di approssimazione con Eq. Normali: ', err_a[0])
 	print ('Errore di approssimazione con SVD: ', err_a[1])
@@ -126,21 +125,21 @@ def approxMulti(
 	plt.legend(loc="upper left")
 	plt.subplot(2,2,2)
 	plt.title('Approssimazione tramite Eq. Normali')
-	for i in range(len(n)):
-		plt.plot(x_plot, y_plot[0][i], label=str(n[i]))
+	for y_plot_i, ni in zip(y_plot[0], n):
+		plt.plot(x_plot, y_plot_i, label=str(ni))
 	plt.legend(loc="upper left")
 	plt.plot(x, y, label="xTrue", color="green", marker="o")
 	plt.subplot(2,2,3)
 	plt.title('Approssimazione tramite SVD')
-	for i,ni in enumerate(n):
-		plt.plot(x_plot, y_plot[1][i], label=str(ni))
+	for y_plot_i, ni in zip(y_plot[1], n):
+		plt.plot(x_plot, y_plot_i, label=str(ni))
 	plt.legend(loc="upper left")
 	plt.plot(x, y, label="xTrue", color="green", marker="o")
 	plt.subplot(2,2,4)
 	plt.title('errori ass per eq. normali / svd')
-	for i, ni in enumerate(n):
-		plt.plot(x, err_a[0][i], label="normali"+str(ni))
-		plt.plot(x, err_a[1][i], label="svd"+str(ni))
+	for err_a0_i, err_a1_i, ni in zip(err_a[0], err_a[1], n):
+		plt.plot(x, err_a0_i, label="normali"+str(ni))
+		plt.plot(x, err_a1_i, label="svd"+str(ni))
 	plt.xlabel("x")
 	plt.ylabel("err. abs.")
 	plt.legend(loc="upper left")
@@ -162,60 +161,61 @@ def funSolve(
 	xvalues:int = 100,
 	shape:tuple[int, int] = (int(2), int(2))
 ):
-	for (m,r,time) in iter.indexSplit([methods,res,times]):
-		print("{}:".format(m))
-		#IF ERROR
+	for i, (method, r) in enumerate(zip(methods, res)):
+		print(f"{method}:")
+		print("a")
 		if isinstance(r[0], str): print("\tError")
 		else:
-			#SOLUTION
 			print("\txTrue: ", xTrue, "\tx found: ", r[0], "\tdiff= ", xTrue - r[0])
 			print("\tf(xTrue): ", f(xTrue), "\tf(x found): ", f(r[0]), "\tdiff= ", matrix.errAbsf(f(xTrue), f(r[0])))
-		#ITERATIONS, ERRORS
+
 		if isinstance(r[2], int): print("\titerations, max_iterations: ", r[1], r[2])
 		else: print("\titerations", r[1])
-		#TIMES
+
 		if len(times) > 0:
-			print("\ttime: ", time)
+			print("\ttime: ", times[i])
 
 	axis_x = np.linspace(a, b, xvalues)
 	axis_y = np.array([f(x) for x in axis_x])
 
-	## FUNCTION / SOLUTIONS
+	print("\n\n FUNCTION / SOLUTIONS \n")
 	plt.rc("font", size=Constants.FONTSIZE)
 	plt.figure(figsize=Constants.FIGSIZE)
 	ind = 1
 	plt.subplot(shape[0], shape[1], ind)
 	plt.plot(axis_x, axis_y, label="f(x)")
 	plt.plot(xTrue, f(xTrue), label="xTrue", marker="o")
-	for i in range(len(methods)):
-		x = res[i][0]
+	for xs, method in zip(res, methods):
+		x = xs[0]
 		if not isinstance(x, str):
 			plt.subplot(shape[0], shape[1], ind)
-			plt.plot(x, f(float(x)), label=methods[i], marker="|", markersize=4)
+			plt.plot(x, f(float(x)), label=method, marker="|", markersize=4)
 	
 	plt.title("solutions")
 	plt.legend()
-	## ABSOLUTE ERROR
+
+	print("\n\n ABSOLUTE ERROR \n")
 	ind += 1
 	plt.subplot(shape[0], shape[1], ind)
-	for i in range(len(methods)):
-		if not isinstance(res[i][0], str):
-			axis_it = np.arange(0, res[i][1], 1)
+	for xs, method in zip(res, methods):
+		if not isinstance(xs[0], str):
+			axis_it = np.arange(0, xs[1], 1)
 			plt.subplot(shape[0], shape[1], ind)
-			plt.plot(axis_it, res[i][3], label=methods[i], marker="x")
+			plt.plot(axis_it, xs[3], label=method, marker="x")
 	
 	plt.title("errors (absolute) / iterations")
 	plt.legend()
 	plt.xlabel("iterations")
 	plt.ylabel("errors (abs)")
-	## RELATIVE ERROR
+
+	print("\n\ RELATIVE ERROR \n")
 	ind += 1
 	plt.subplot(shape[0], shape[1], ind)
-	for i in range(len(methods)):
-		if not isinstance(res[i][0], str) and isinstance(res[i][2], np.ndarray):
-			axis_it = np.arange(0, res[i][1], 1)
+	for xs, method in zip(res, methods):
+		if not isinstance(xs[0], str) and isinstance(xs[2], np.ndarray):
+			axis_it = np.arange(0, xs[1], 1)
 			plt.subplot(shape[0], shape[1], ind)
-			plt.plot(axis_it, res[i][2], label=methods[i], marker="x")
+			plt.plot(axis_it, xs[2], label=method, marker="x")
 	
 	plt.title("errors (between iterations) / iterations")
 	plt.legend()
@@ -243,15 +243,15 @@ def matEq(
 	# PRINT
 	print ('Norme, numeri di condizione di A:')
 	for (ord,norm) in zip(ords, A_norms):
-		print("Norma {ord_name} = {norm_val}".format(ord_name=ord, norm_val=norm))
+		print(f"Norma {ord} = {norm}")
 
 	for (ord,cond) in zip(ords, A_conds):
-		print("K(A) {ord_name} = {cond_val}".format(ord_name=ord, cond_val=cond))
+		print(f"K(A) {ord} = {cond}")
 
 	print("\n")
 
 	for (mat,name) in zip(more_mat, more_name):
-		print("{name} = {mat}".format(name=name,mat=mat))
+		print(f"{name} = {mat}")
 
 def matEq_lu(
 	A:np.ndarray,
@@ -299,11 +299,14 @@ def optim(
 	f:Callable[[np.ndarray], float],
 	xt:list,
 	yt:list,
+	x_method:np.ndarray,
 	labels:list[tuple[str, str]],
-	shape:tuple[int, int] = (2,3)
+	shape:tuple[int, int] = (2,4)
 ) :
-	x = np.linspace(1,2.5,100)
-	y = np.linspace(0,1.5, 100)
+	#x = np.linspace(1,2.5,100)
+	#y = np.linspace(0,1.5, 100)
+	x = np.linspace(-10, 10, 500)
+	y = np.linspace(-10, 10, 500)
 	X, Y = np.meshgrid(x, y)
 	Z = f(np.array([X, Y]))
 
@@ -314,7 +317,7 @@ def optim(
 
 	'''plots'''
 
-	for (x1, y1, labels1) in iter.indexSplit([xt, yt, labels]):
+	for (x1, y1, labels1) in zip(xt, yt, labels):
 		#fig.add_subplot(shape[0], shape[1], ind)
 		plt.subplot(shape[0], shape[1], ind)
 		plt.plot(x1, y1)
@@ -344,7 +347,14 @@ def optim(
 	ind += 1
 	fig.add_subplot(shape[0], shape[1], ind, projection="3d")
 	contours = plt.contour(X, Y, Z, levels=30)
+	plt.plot(x_method[:,0], x_method[:,1], '*-')
 	plt.title('Contour plot')
+
+	ind += 1
+	fig.add_subplot(shape[0], shape[1], ind)
+	contours = plt.contour(X, Y, Z, levels=30)
+	plt.plot(x_method[:,0], x_method[:,1], '*-')
+	plt.title('Contour plot (flat)')
 	plt.show()
 
 
@@ -359,20 +369,39 @@ def _plot_figure(
 ):
 	"""
 	Add plots to current figure, with x,y,labels.  
+	
+	## Parameters:  
+	*	labels : list of lists (each for one figure) of optional tuples, in one of the following forms:  
+		*	`()` : empty  
+		*	`(TITLE)` :  
+		*	`(XLABEL, YLABEL)` :  
+		*	`(TITLE, XLABEL, YLABEL)` :  
 	"""
 	ind = 1
 	for (x1, y1, labels1) in iter.indexSplit([x, y, labels]):
+		xlabel, ylabel, title = "", "", ""
+		if len(labels1) == 1:
+			title = labels1[0]
+		elif len(labels1) == 2:
+			xlabel = labels1[0]
+			ylabel = labels1[1]
+			title = f'{ylabel} / {xlabel}'
+		elif len(labels1) == 3:
+			title = labels1[0]
+			xlabel = labels1[1]
+			ylabel = labels1[2]
+
 		plt.subplot(shape[0], shape[1], ind)
 		plt.plot(x1, y1)
-		plt.xlabel(labels1[0])
-		plt.ylabel(labels1[1])
-		plt.title(labels1[1] + ' / ' + labels1[0])
+		plt.xlabel(xlabel)
+		plt.ylabel(ylabel)
+		plt.title(title)
 		ind += 1
 		plt.subplot(shape[0], shape[1], ind)
 		plt.loglog(x1, y1)
-		plt.xlabel(labels1[0])
-		plt.ylabel(labels1[1])
-		plt.title(labels1[1] + ' / ' + labels1[0])
+		plt.xlabel(xlabel)
+		plt.ylabel(ylabel)
+		plt.title(title)
 		ind += 1
 	
 

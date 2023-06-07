@@ -9,22 +9,20 @@ from numan import (
 )
 
 
-''' Bisection '''
-""" Newton """
+print('''\n\n Bisection \n''')
+print("""\n\n Newton \n""")
 
-'''data '''
-f = lambda x: np.exp(x) - x**2
-df = lambda x: np.exp(x) - 2*x
-xTrue = -0.7034674
+f		= lambda x: np.exp(x) - x**2
+df		= lambda x: np.exp(x) - 2*x
+xTrue	= -0.7034674
 
-a=-1.0
-b=1.0
-tolx= 1.e-10
-toly = 1.e-6
-maxit = 100
-x0 = 0
+a		= -1.0
+b		= 1.0
+tolx	= 1.e-10
+toly	= 1.e-6
+maxit	= 100
+x0		= 0
 
-""" solutions """
 
 methods = [
 	"bisection",

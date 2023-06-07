@@ -8,17 +8,17 @@ from numan import (
 )
 
 
-""" LLS / SVD """
+print("""\n\n LLS / SVD \n""")
 
-FIGSIZE = (15,7)
-FONTSIZE = 7
-STEPS = 300
+FIGSIZE		= (15,7)
+FONTSIZE	= 7
+STEPS		= 300
 
 
 
 """ 2 """
 
-data = np.array(pd.read_csv("HeightVsWeight.csv"))
+data = np.array(pd.read_csv("src/lab/HeightVsWeight.csv"))
 x = data[:, 0]
 y = data[:, 1]
 

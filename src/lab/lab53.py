@@ -5,7 +5,6 @@ sys.path.append("src/lab")
 from numan import (
 	Constants,
 	matrix,
-	polyrn,
 	prints
 )
 
@@ -36,38 +35,39 @@ def tikhonov():
 
 
 	#figures = []
-	fig = plt.figure(figsize=Constants.FIGSIZE)
 	FIG_SHAPE = [1,6,1]
+	fig = plt.figure(figsize=Constants.FIGSIZE)
 	prints.img(X, FIG_SHAPE, title="Original")
 
-	for _lam_i, lam in enumerate(lambdas):
+	for max_it in ites:
+		f_X 	= lambda x	: f(K, blurred_and_noised, x, lam)
+		df_X	= lambda x	: df(K, blurred_and_noised, x, lam)
 
-		#FIG_SHAPE = [2,2,1]
-		#figures.append(plt.figure(figsize=Constants.FIGSIZE))
-		
-		for max_it in ites:
-			f_X 	= lambda x	: f(K, blurred_and_noised, x, lam)
-			df_X	= lambda x	: df(K, blurred_and_noised, x, lam)
+		FIG_SHAPE = [1,6,1]
+		fig = plt.figure(figsize=Constants.FIGSIZE)
 
-			_title = "lambda: {}, it: {}".format(lam, max_it)
 
-			#prints.img(X, FIG_SHAPE)
-			#prints.img(blurred, FIG_SHAPE)
+		for _lam_i, lam in enumerate(lambdas):
 
-			res_tikhonov = minimize(fun=f_X, x0=blurred_and_noised.flatten(), method='CG', jac=df_X, options={'maxiter':max_it,'return_all':True})
-			res_tikhonov = np.reshape(res_tikhonov.x, X.shape)
-			prints.img(res_tikhonov, FIG_SHAPE, title="tikhonov; "+_title)
+			#FIG_SHAPE = [2,2,1]
+			#figures.append(plt.figure(figsize=Constants.FIGSIZE))
+			
 
-			res_PSNR = metrics.peak_signal_noise_ratio(X, res_tikhonov)
-			res_MSE = metrics.mean_squared_error(X, res_tikhonov)
+				_title = "lambda: {}, it: {}".format(lam, max_it)
 
-			#psnr, mse
-			print(_title)
-			print(f'psnr = {res_PSNR},\tmse = {res_MSE}')
+				#prints.img(X, FIG_SHAPE)
+				#prints.img(blurred, FIG_SHAPE)
 
-			# only try all maxit with first lambda 
-			if _lam_i > 0:
-				break
+				res_tikhonov = minimize(fun=f_X, x0=blurred_and_noised.flatten(), method='CG', jac=df_X, options={'maxiter':max_it,'return_all':True})
+				res_tikhonov = np.reshape(res_tikhonov.x, X.shape)
+				prints.img(res_tikhonov, FIG_SHAPE, title="tikhonov; "+_title)
+
+				res_PSNR = metrics.peak_signal_noise_ratio(X, res_tikhonov)
+				res_MSE = metrics.mean_squared_error(X, res_tikhonov)
+
+				#psnr, mse
+				print(_title)
+				print(f'psnr = {res_PSNR},\tmse = {res_MSE}')
 
 
 

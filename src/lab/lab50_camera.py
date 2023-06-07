@@ -1,14 +1,8 @@
 import sys
 sys.path.append("lib")
 
-from numan import (
-	Constants,
-	prints
-)
-
 import numpy as np
 from numpy import fft
-import matplotlib.pyplot as plt
 from skimage import data, metrics
 
 

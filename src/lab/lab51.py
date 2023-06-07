@@ -15,7 +15,7 @@ import matplotlib.pyplot as plt
 from lab50_camera import *
 
 
-
+np.random.seed(0)
 
 
 def corrupted():
@@ -26,9 +26,9 @@ def corrupted():
 	#X
 	print(f"\nX: {X.shape}")
 
-	prints.img(X, FIG_SHAPE)
-	prints.img(blurred, FIG_SHAPE)
-	prints.img(blurred_and_noised, FIG_SHAPE)
+	prints.img(X, FIG_SHAPE, title="original")
+	prints.img(blurred, FIG_SHAPE, title="blurred")
+	prints.img(blurred_and_noised, FIG_SHAPE, title="blurred and noised")
 
 
 	#psnr, mse

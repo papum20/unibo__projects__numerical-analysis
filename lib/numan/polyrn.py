@@ -41,7 +41,7 @@ def gradient(
 		norm_df[it] = np.linalg.norm(df(x[it]), ord=2)		
 		err_a[it] = matrix.errAbs(x[it], xTrue)
 
-	return (x[it], x, it, fx[:it+1], norm_df[:it+1], err_a[:it+1])
+	return (x[it], x[:it+1], it, fx[:it+1], norm_df[:it+1], err_a[:it+1])
 
 
 def backtrack(

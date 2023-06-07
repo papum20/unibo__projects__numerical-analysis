@@ -33,16 +33,16 @@ def bisection(
 	err_a = np.zeros( (k) )
 	fa, fb = f(a), f(b)
 	sign_a, sign_b = (fa >= 0), (fb >= 0)	#true if >= 0, else false
-	# error case (if f(a)*f(b) > 0)
+
 	if sign_a == sign_b and fa != 0 and fb != 0:
 		print("Error: f(a) * f(b) > 0")
 		return ("Error", -1, -1, err_a)
-	#
+	
 	ak, bk, ck = a, b, 0
 	for it in range(1, k):
-		# error case ()
+
 		if b - a < Constants.FLOAT_MANT_MIN:
-			print('Error: l\'intervallo è troppo piccolo ')
+			print("Error: l'intervallo è troppo piccolo ")
 			return ("Error", it, k, err_a)
 		ck = ak + (bk - ak) / 2
 		fck = f(ck)
@@ -84,20 +84,20 @@ def successiveApprox(
 	toly:float=Constants.TOL_Y
 ) -> tuple[float|str, int, np.ndarray, np.ndarray] :
 
-	err_a = np.zeros(maxit + 1, dtype=float)
-	err_k = np.zeros(maxit, dtype=float)
-	err_a[0] = matrix.errAbsf(x0, xTrue)
-	err_k[0] = tolx + 1
-	err_y = toly + 1
+	err_a		= np.zeros(maxit + 1, dtype=float)
+	err_k		= np.zeros(maxit, dtype=float)
+	err_a[0]	= matrix.errAbsf(x0, xTrue)
+	err_k[0]	= tolx + 1
+	err_y		= toly + 1
 
-	fcomp = f(x0)
-	xk = x0
-	it = 0
+	fcomp	= f(x0)
+	xk		= x0
+	it		= 0
 	while it == 0 or (it < maxit and err_k[it-1] > tolx and err_y > toly): 
-		xk_prev = xk
-		xk = g(xk, [f, df])
+		xk_prev	= xk
+		xk		= g(xk, [f, df])
 		err_y, err_k[it] = stopCriteria(xk, xk_prev, f(xk), fcomp=fcomp)
-		err_a[it+1] = matrix.errAbsf(xk, xTrue)
+		err_a[it+1]	= matrix.errAbsf(xk, xTrue)
 		it += 1
 
 	return (xk, it, err_k[:it], err_a[:it])  
