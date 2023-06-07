@@ -50,29 +50,46 @@ def AT(x, K):
 	x = fft.fft2(x)
 	return np.real(fft.ifft2(np.conj(K) * x))
 
+def get_gray_image(X):
+	if len(X.shape) == 3:
+		m, n, k = X.shape
+		res = np.zeros((m, n))
+
+		for i in range(m):
+			for j in range(n):
+				res[i][j] = X[i][j][0]
+		return res
+	else:
+		return X
+
 
 
 
 # load img
-camera = data.camera().astype(np.float64) / 255.0
+#X = data.camera().astype(np.float64) / 255.0 # type: ignore
+X = data.astronaut().astype(np.float64) / 255.0 # type: ignore
+#X = data.cat().astype(np.float64) / 255.0 # type: ignore
+#X = data.horse().astype(np.float64) / 255.0 # type: ignore
+
+X = get_gray_image(X)
 
 ## create kernel
 kernlen = 24
 sigma = 3
 ker = gaussian_kernel(kernlen, sigma)
 ## create K
-K = psf_fft(ker, kernlen, camera.shape)
+K = psf_fft(ker, kernlen, X.shape)
 
 ## apply blur
-blurred = A(camera, K)
+blurred = A(X, K)
 
 # apply noise
 dev_std = 0.02
-noise = np.random.normal(scale=np.ones(camera.shape)) * dev_std
-noised = blurred + noise
-noisedT = AT(noised, K)
+noise = np.random.normal(loc=0, scale=np.ones(X.shape) * dev_std, size=X.shape)
+blurred_and_noised = blurred + noise
+blurred_and_noisedT = AT(blurred_and_noised, K)
 
 # peak signal noise ration, mean squared error
-psnr = metrics.peak_signal_noise_ratio(camera, noised)
-mse = metrics.mean_squared_error(camera, noised)
+psnr = metrics.peak_signal_noise_ratio(X, blurred_and_noised)
+mse = metrics.mean_squared_error(X, blurred_and_noised)
 

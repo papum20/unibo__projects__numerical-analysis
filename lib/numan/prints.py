@@ -46,8 +46,8 @@ def approx(
 	print("shape of A: ", A.shape)
 	print('Shape of x:', x.shape)
 	print('Shape of y:', y.shape, "\n")
-	for a in alpha:
-		print("alpha {} = {}".format(a, alpha[a]))
+	for (_key, _val) in alpha.items():
+		print("alpha {} = {}".format(_key, _val))
 
 	print("x: ", x)
 	print("y, my_y: ")
@@ -108,19 +108,20 @@ def approxMulti(
 
 	print('Shape of x:', x.shape)
 	print('Shape of y:', y.shape, "\n")
-	for a in alpha:
-		print("alpha {} = {}".format(a, alpha[a]))
+	for (_key, _val) in alpha.items():
+		print("alpha {} = {}".format(_key, _val))
 
 	print ('Errore di approssimazione con Eq. Normali: ', err_a[0])
 	print ('Errore di approssimazione con SVD: ', err_a[1])
 
 	plt.rc("font", size=Constants.FONTSIZE)
 	plt.figure(figsize=Constants.FIGSIZE)
+	
 	plt.subplot(2,2,1)
 	plt.title('Approssimazione tramite Eq. Normali / SVD')
-	for i in range(len(n)):
-		plt.plot(x_plot, y_plot[0][i], label="normali "+str(n[i]))
-		plt.plot(x_plot, y_plot[1][i], label="svd "+str(n[i]))
+	for (y0, y1, ni) in zip(y_plot[0], y_plot[1], n):
+		plt.plot(x_plot, y0, label="normali "+str(ni))
+		plt.plot(x_plot, y1, label="svd "+str(ni))
 	plt.plot(x, y, label="xTrue", color="green", marker="o")
 	plt.legend(loc="upper left")
 	plt.subplot(2,2,2)
@@ -131,15 +132,15 @@ def approxMulti(
 	plt.plot(x, y, label="xTrue", color="green", marker="o")
 	plt.subplot(2,2,3)
 	plt.title('Approssimazione tramite SVD')
-	for i in range(len(n)):
-		plt.plot(x_plot, y_plot[1][i], label=str(n[i]))
+	for i,ni in enumerate(n):
+		plt.plot(x_plot, y_plot[1][i], label=str(ni))
 	plt.legend(loc="upper left")
 	plt.plot(x, y, label="xTrue", color="green", marker="o")
 	plt.subplot(2,2,4)
 	plt.title('errori ass per eq. normali / svd')
-	for i in range(len(n)):
-		plt.plot(x, err_a[0][i], label="normali"+str(n[i]))
-		plt.plot(x, err_a[1][i], label="svd"+str(n[i]))
+	for i, ni in enumerate(n):
+		plt.plot(x, err_a[0][i], label="normali"+str(ni))
+		plt.plot(x, err_a[1][i], label="svd"+str(ni))
 	plt.xlabel("x")
 	plt.ylabel("err. abs.")
 	plt.legend(loc="upper left")
@@ -164,13 +165,13 @@ def funSolve(
 	for (m,r,time) in iter.indexSplit([methods,res,times]):
 		print("{}:".format(m))
 		#IF ERROR
-		if type(r[0]) == type(str): print("\tError")
+		if isinstance(r[0], str): print("\tError")
 		else:
 			#SOLUTION
 			print("\txTrue: ", xTrue, "\tx found: ", r[0], "\tdiff= ", xTrue - r[0])
 			print("\tf(xTrue): ", f(xTrue), "\tf(x found): ", f(r[0]), "\tdiff= ", matrix.errAbsf(f(xTrue), f(r[0])))
 		#ITERATIONS, ERRORS
-		if type(r[2]) == int: print("\titerations, max_iterations: ", r[1], r[2])
+		if isinstance(r[2], int): print("\titerations, max_iterations: ", r[1], r[2])
 		else: print("\titerations", r[1])
 		#TIMES
 		if len(times) > 0:
@@ -188,7 +189,7 @@ def funSolve(
 	plt.plot(xTrue, f(xTrue), label="xTrue", marker="o")
 	for i in range(len(methods)):
 		x = res[i][0]
-		if(type(x) != str):
+		if not isinstance(x, str):
 			plt.subplot(shape[0], shape[1], ind)
 			plt.plot(x, f(float(x)), label=methods[i], marker="|", markersize=4)
 	
@@ -198,7 +199,7 @@ def funSolve(
 	ind += 1
 	plt.subplot(shape[0], shape[1], ind)
 	for i in range(len(methods)):
-		if(type(res[i][0]) != str):
+		if not isinstance(res[i][0], str):
 			axis_it = np.arange(0, res[i][1], 1)
 			plt.subplot(shape[0], shape[1], ind)
 			plt.plot(axis_it, res[i][3], label=methods[i], marker="x")
@@ -211,7 +212,7 @@ def funSolve(
 	ind += 1
 	plt.subplot(shape[0], shape[1], ind)
 	for i in range(len(methods)):
-		if type(res[i][0]) != str and type(res[i][2]) == np.ndarray:
+		if not isinstance(res[i][0], str) and isinstance(res[i][2], np.ndarray):
 			axis_it = np.arange(0, res[i][1], 1)
 			plt.subplot(shape[0], shape[1], ind)
 			plt.plot(axis_it, res[i][2], label=methods[i], marker="x")
@@ -232,8 +233,6 @@ PRINT DATA ON MATRIX EQUATIONS
 
 def matEq(
 	A:np.ndarray,
-	x:np.ndarray,
-	b:np.ndarray,
 	ords:list[str]=Constants.ORDS,
 	more_mat:list[np.ndarray|np.floating]=[],
 	more_name:list[str]=[]
@@ -243,15 +242,15 @@ def matEq(
 
 	# PRINT
 	print ('Norme, numeri di condizione di A:')
-	for (ord,norm) in iter.indexSplit([ords,A_norms]):
+	for (ord,norm) in zip(ords, A_norms):
 		print("Norma {ord_name} = {norm_val}".format(ord_name=ord, norm_val=norm))
 
-	for (ord,cond) in iter.indexSplit([ords,A_conds]):
+	for (ord,cond) in zip(ords, A_conds):
 		print("K(A) {ord_name} = {cond_val}".format(ord_name=ord, cond_val=cond))
 
 	print("\n")
 
-	for (mat,name) in iter.indexSplit([more_mat,more_name]):
+	for (mat,name) in zip(more_mat, more_name):
 		print("{name} = {mat}".format(name=name,mat=mat))
 
 def matEq_lu(
@@ -266,9 +265,9 @@ def matEq_lu(
 	# risoluzione di    Ax = b   <--->  PLUx = b 
 	my_x = scipy.linalg.lu_solve((lu, piv), b)
 	x_err_a = np.linalg.norm(my_x - x, ord=2)
-	more_mat.extend((lu,piv,my_x,x_err_a))
-	more_name.extend(("lu","piv","my x","errore assoluto x"))
-	matEq(A, x, b, ords, more_mat, more_name)
+	more_mat.extend((lu, piv, my_x, x_err_a))
+	more_name.extend(("lu", "piv", "my x", "errore assoluto x"))
+	matEq(A, ords, more_mat, more_name)
 
 # richiede matrice simmetrica e definitia positiva
 # A@A.T lo è sempre
@@ -289,7 +288,7 @@ def matEq_cholesky(
 	x_err_a = scipy.linalg.norm(x - x_chol, ord='fro')
 	more_mat.extend((L, A_chol, A_err_a, y, x_chol, x_err_a))
 	more_name.extend(("L", "A_chol", "A_err_a", "y", "x_chol", "x_err_a"))
-	matEq(A, x, b, ords, more_mat, more_name)
+	matEq(A, ords, more_mat, more_name)
 
 
 """
@@ -352,16 +351,16 @@ def optim(
 
 """ GENERAL """
 
-def plot(
+def _plot_figure(
 	x:list[np.ndarray],
 	y:list[np.ndarray],
 	labels:list[tuple[str, str]],
 	shape:tuple[int,int]=(3,4)
 ):
-	plt.rc("font", size=Constants.FONTSIZE)
-	plt.figure(figsize=Constants.FIGSIZE)
+	"""
+	Add plots to current figure, with x,y,labels.  
+	"""
 	ind = 1
-
 	for (x1, y1, labels1) in iter.indexSplit([x, y, labels]):
 		plt.subplot(shape[0], shape[1], ind)
 		plt.plot(x1, y1)
@@ -375,38 +374,45 @@ def plot(
 		plt.ylabel(labels1[1])
 		plt.title(labels1[1] + ' / ' + labels1[0])
 		ind += 1
+	
+
+def plot(
+	x:list[np.ndarray],
+	y:list[np.ndarray],
+	labels:list[tuple[str, str]],
+	shape:tuple[int,int]=(3,4)
+):
+	"""
+	Plot and show.  
+	"""
+	plt.rc("font", size=Constants.FONTSIZE)
+	plt.figure(figsize=Constants.FIGSIZE)
+
+	_plot_figure(x, y, labels, shape)
 	plt.show()
 
-def plot_sync(
+
+def plot_async(
 	x:list[list[np.ndarray]],
 	y:list[list[np.ndarray]],
 	labels:list[list[tuple[str, str]]],
 	shape:tuple[int,int]=(3,4)
-):
+)->list:
 	plt.rc("font", size=Constants.FONTSIZE)
 	figures = []
 
-	for fg in range(len(x)):
+	for (x_fg, y_fg, labels_fg) in zip(x, y, labels):
 		figures.append(plt.figure(figsize=Constants.FIGSIZE))
-		ind = 1
+		_plot_figure(x_fg, y_fg, labels_fg, shape)
 
-		for (x1, y1, labels1) in iter.indexSplit([x[fg], y[fg], labels[fg]]):
-			plt.subplot(shape[0], shape[1], ind)
-			plt.plot(x1, y1)
-			plt.xlabel(labels1[0])
-			plt.ylabel(labels1[1])
-			plt.title(labels1[1] + ' / ' + labels1[0])
-			ind += 1
-			plt.subplot(shape[0], shape[1], ind)
-			plt.loglog(x1, y1)
-			plt.xlabel(labels1[0])
-			plt.ylabel(labels1[1])
-			plt.title(labels1[1] + ' / ' + labels1[0])
-			ind += 1
-	plt.show()
+	return figures
 
 
-def img(img, shape:list[int]) -> None :
+def img(
+	img,
+	shape:list[int],
+	title:str=""
+) -> None :
 	"""
 	add img to current open pyplot, increase shape index.
 
@@ -420,4 +426,6 @@ def img(img, shape:list[int]) -> None :
 	"""
 	ax = plt.subplot(shape[0], shape[1], shape[2])
 	ax.imshow(img, cmap='gray')
+	#ax.set_title(title, fontdict={'fontsize':Constants.FONTSIZE})
+	plt.title(title, fontsize=Constants.FONTSIZE)
 	shape[2] += 1

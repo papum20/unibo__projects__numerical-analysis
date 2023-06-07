@@ -1,6 +1,7 @@
 import sys
 sys.path.append("lib")
 
+import matplotlib.pyplot as plt
 import numpy as np
 from numan import (
     polyrn,
@@ -37,4 +38,5 @@ for l in lambdas:
 	print(f"xTrue={xk}")
 	print(f"solution found={xk},\tin {it} iterations")
 
-prints.plot_sync(plotx, ploty, labels, shape=(2, 3))
+prints.plot_async(plotx, ploty, labels, shape=(2, 3))
+plt.show()
